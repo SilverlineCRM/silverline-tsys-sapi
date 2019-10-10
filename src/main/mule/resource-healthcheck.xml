@@ -1,0 +1,53 @@
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+xmlns="http://www.mulesoft.org/schema/mule/core"
+xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:request-config name="sapi-http-request" doc:name="HTTP Request configuration" doc:id="7d246c5b-9652-42d6-b51e-c702cd3ed755" >
+		<http:request-connection host="silverline-helloworld-sapi.cloudub.io" port="80" />
+	</http:request-config>
+	<http:request-config name="papi-http-request" doc:name="HTTP Request configuration" doc:id="5d6397e9-f884-4b08-9a1b-4227e5080eb5" >
+		<http:request-connection host="silverline-helloworld-papi.cloudhub.io" port="80" />
+	</http:request-config>
+	<flow name="resource-healthcheckFlow" doc:id="e679a217-ccd8-44b7-95ed-afddb2f5cafa" >
+		<scatter-gather doc:name="Scatter-Gather" doc:id="f1cd3698-852f-4a34-bf08-8330d95f4021" timeout="10">
+			<route >
+				<set-variable value="" doc:name="PAPI Response" doc:id="1e52f353-145f-4c4f-81ca-e4b312e0c531" variableName="papi-response" />
+				<http:request method="GET" doc:name="Ping PAPI" doc:id="d1906026-5cf2-44c4-8fcc-1bee9d347422" config-ref="papi-http-request"/>
+			</route>
+			<route >
+				<set-variable value="" doc:name="SAPI Response" doc:id="5b2bff7d-dd98-491f-ae1f-91e8cb603985" variableName="sapi-response"/>
+				<http:request method="GET" doc:name="Ping SAPI" doc:id="fc5c2fd1-fa0a-4cdb-8868-9998070cbbc4" config-ref="sapi-http-request"/>
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Create Response" doc:id="1fec2e84-ab87-46c9-8775-749741fb2392" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+              {
+                  "response": {
+                      "application": "Silverline Helloworld EAPI",
+                      "buildversion": "1.0.0",
+                      "buildTimestamp": "01/01/2017 00:01:00.111",
+                      "host": "10.10.10.10",
+                      "status": "success",
+                      "tier": "dev",
+                      "systems": [
+                          {
+                              "message": "Silverline Helloworld PAPI is Ok",
+                              "name": "Silverline Helloworld PAPI",
+                              "status": "Ok"
+                          },
+                          {
+                              "message": "Silverline Helloworld SAPI is Ok",
+                              "name": "Silverline Helloworld SAPI",
+                              "status": "Ok"
+                          }
+                      ]
+                  }
+              }]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

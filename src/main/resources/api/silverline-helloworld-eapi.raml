@@ -1,0 +1,53 @@
+#%RAML 1.0
+title: Silverline Helloworld EAPI
+version: v1
+  
+/ping:
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "status": "Ok"
+              }
+/healthcheck:
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                  "response": {
+                      "application": "Silverline Helloworld EAPI",
+                      "buildversion": "1.0.0",
+                      "buildTimestamp": "01/01/2017 00:01:00.111",
+                      "host": "10.10.10.10",
+                      "status": "success",
+                      "tier": "dev",
+                      "systems": [
+                          {
+                              "message": "Silverline Helloworld PAPI is Ok",
+                              "name": "Silverline Helloworld PAPI",
+                              "status": "Ok"
+                          },
+                          {
+                              "message": "Silverline Helloworld SAPI is Ok",
+                              "name": "Silverline Helloworld SAPI",
+                              "status": "Ok"
+                          }
+                      ]
+                  }
+              }
+/greeting:
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "message": "Hello World"
+              }
